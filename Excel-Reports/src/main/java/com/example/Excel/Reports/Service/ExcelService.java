@@ -13,7 +13,7 @@ import com.example.Excel.Reports.Models.ReportExcel;
 public interface ExcelService {
 	
 	public List<ReportExcel> getAllData();
-	public List<XSSFWorkbook> generateExcelReport(List<ReportExcel> reportData) throws IOException;
+	public byte[] generateExcelReport(List<ReportExcel> reportData) throws IOException;
 	public NReport readExcelReport(MultipartFile file) throws IOException;
 //List<XSSFWorkbook>
 }

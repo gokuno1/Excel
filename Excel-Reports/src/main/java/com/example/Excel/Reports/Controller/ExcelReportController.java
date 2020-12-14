@@ -28,11 +28,12 @@ public class ExcelReportController {
 	public ResponseEntity<byte[]> generateExcel() throws IOException
 	{
 		List<ReportExcel> reportData = excelService.getAllData();
-		byte [] excel = excelService.generateExcelReport(reportData);
+		byte[] excel = excelService.buildExcel(reportData);
 		 return ResponseEntity.ok()
 			        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "CB_SOUTH"+".xlsx")
 			        .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
 			        .body(excel);
+			        
 	}
 	
 	@PostMapping(value = "/uploadData")	

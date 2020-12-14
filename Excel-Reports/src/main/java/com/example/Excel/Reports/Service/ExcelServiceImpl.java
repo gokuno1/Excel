@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -36,63 +39,64 @@ import com.example.Excel.Reports.Repository.NExcexlRepository;
 import com.google.common.collect.Lists;
 
 @Service
-public class ExcelServiceImpl implements ExcelService{
-	
+public class ExcelServiceImpl implements ExcelService {
+
 	@Autowired
 	private ExcelRepository excelRepository;
-	
-	private NExcexlRepository nexcexlRepository; 
 
-	@Override //List<XSSFWorkbook>
-	public List<XSSFWorkbook> generateExcelReport(List<ReportExcel> reportData) throws IOException {
+	private NExcexlRepository nexcexlRepository;
+
+	@Override // List<XSSFWorkbook>
+	public byte[] generateExcelReport(List<ReportExcel> reportData) throws IOException {
 		// TODO Auto-generated method stub
 		List<XSSFWorkbook> workbooks = new ArrayList<XSSFWorkbook>();
-		String[] COLUMNs=new String[]{"ZONE","REGION","DEPOT","ROLE","SAP_CODE","MOBILE_NUMBER","COMPANY_NAME","FIRST_NAME",
-				"LAST_NAME","LAST_LOGIN_DATE","FIRST_TIME_LOGIN_DATE"};
-		
+		String[] COLUMNs = new String[] { "ZONE", "REGION", "DEPOT", "ROLE", "SAP_CODE", "MOBILE_NUMBER",
+				"COMPANY_NAME", "FIRST_NAME", "LAST_NAME", "LAST_LOGIN_DATE", "FIRST_TIME_LOGIN_DATE" };
+
 		try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
-		Sheet sheet = workbook.createSheet("CB_SOUTH_A");
-		
-		List<ReportExcel> dealerDataList1 = reportData;
-		Font headerFont = workbook.createFont();
-		headerFont.setBold(true);
-		headerFont.setColor(IndexedColors.BLUE.getIndex());
+			Sheet sheet = workbook.createSheet("CB_SOUTH_A");
 
-		CellStyle headerCellStyle = workbook.createCellStyle();
-		headerCellStyle.setFont(headerFont);
+			List<ReportExcel> dealerDataList1 = reportData;
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setColor(IndexedColors.BLUE.getIndex());
 
-		// Row for Header
-		Row headerRow = sheet.createRow(0);
+			CellStyle headerCellStyle = workbook.createCellStyle();
+			headerCellStyle.setFont(headerFont);
 
-		// Header
-		for (int col = 0; col < COLUMNs.length; col++) {
-			Cell cell = headerRow.createCell(col);
-			cell.setCellValue(COLUMNs[col]);
-			cell.setCellStyle(headerCellStyle);
+			// Row for Header
+			Row headerRow = sheet.createRow(0);
+
+			// Header
+			for (int col = 0; col < COLUMNs.length; col++) {
+				Cell cell = headerRow.createCell(col);
+				cell.setCellValue(COLUMNs[col]);
+				cell.setCellStyle(headerCellStyle);
+			}
+			int rowIdx = 1;
+			// for(List<ReportExcel> dealerDataList: getDataInChunk(dealerDataList1) ) {
+			for (ReportExcel reportObject : dealerDataList1) {
+				Row row = sheet.createRow(rowIdx++);
+				int cellCount = 0;
+				row.createCell(cellCount++).setCellValue(reportObject.getZone());
+				row.createCell(cellCount++).setCellValue(reportObject.getRegion());
+				row.createCell(cellCount++).setCellValue(reportObject.getDepot());
+				row.createCell(cellCount++).setCellValue(reportObject.getRole());
+				row.createCell(cellCount++).setCellValue(reportObject.getSapcode());
+				row.createCell(cellCount++).setCellValue(reportObject.getMobileNo());
+				row.createCell(cellCount++).setCellValue(reportObject.getCompanyName());
+				row.createCell(cellCount++).setCellValue(reportObject.getFirstName());
+				row.createCell(cellCount++).setCellValue(reportObject.getLastName());
+				row.createCell(cellCount++).setCellValue(reportObject.getLastLoginDate());
+				row.createCell(cellCount++).setCellValue(reportObject.getFirstTimeLoginDate());
+			}
+			workbook.write(out);
+			//workbooks.add(workbook);
+			//writeWorkBooks(workbooks);
+			//return workbooks;
+			 return out.toByteArray();
 		}
-		int rowIdx = 1;
-		//for(List<ReportExcel> dealerDataList: getDataInChunk(dealerDataList1) ) {
-		for (ReportExcel reportObject : dealerDataList1) {
-			Row row = sheet.createRow(rowIdx++);
-			int cellCount=0;
-			row.createCell(cellCount++).setCellValue(reportObject.getZone());				
-			row.createCell(cellCount++).setCellValue(reportObject.getRegion());
-			row.createCell(cellCount++).setCellValue(reportObject.getDepot());
-			row.createCell(cellCount++).setCellValue(reportObject.getRole());
-			row.createCell(cellCount++).setCellValue(reportObject.getSapcode());
-			row.createCell(cellCount++).setCellValue(reportObject.getMobileNo());
-			row.createCell(cellCount++).setCellValue(reportObject.getCompanyName());
-			row.createCell(cellCount++).setCellValue(reportObject.getFirstName());
-			row.createCell(cellCount++).setCellValue(reportObject.getLastName());
-			row.createCell(cellCount++).setCellValue(reportObject.getLastLoginDate());
-			row.createCell(cellCount++).setCellValue(reportObject.getFirstTimeLoginDate());
-		}
-		workbook.write(out);
-		out.close();
-		return workbooks;
-		//return out.toByteArray();
-	}
-		
+
 	}
 
 	@Override
@@ -105,22 +109,21 @@ public class ExcelServiceImpl implements ExcelService{
 
 	public void writeWorkBooks(List<XSSFWorkbook> wbs) {
 		String fileName = "SOUTH_DATA";
-        FileOutputStream out;
-        try {
-            for (int i = 0; i < wbs.size(); i++) {
-                String newFileName = fileName.substring(0, fileName.length() - 5);
-                out = new FileOutputStream(new File(newFileName + "_" + (i + 1) + ".xlsx"));
-                wbs.get(i).write(out);
-                out.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-	
-	public static  List<List<ReportExcel>> getDataInChunk(List<ReportExcel> inputList)
-	{
-	
+		FileOutputStream out;
+		try {
+			for (int i = 0; i < wbs.size(); i++) {
+				String newFileName = fileName.substring(0, fileName.length() - 5);
+				out = new FileOutputStream(new File(newFileName + "_" + (i + 1) + ".xlsx"));
+				wbs.get(i).write(out);
+				out.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static List<List<ReportExcel>> getDataInChunk(List<ReportExcel> inputList) {
+
 		List<List<ReportExcel>> chunkDataList = Lists.partition(inputList, 1000);
 		return chunkDataList;
 	}
@@ -128,7 +131,7 @@ public class ExcelServiceImpl implements ExcelService{
 	@Override
 	public NReport readExcelReport(MultipartFile file) throws IOException {
 		// TODO Auto-generated method stub
-		
+
 		NReport report = new NReport();
 		InputStream newFile = file.getInputStream();
 		XSSFWorkbook workbook = new XSSFWorkbook(newFile);
@@ -136,73 +139,80 @@ public class ExcelServiceImpl implements ExcelService{
 		Iterator<Row> rowIterator = sheet.iterator();
 
 		DataFormatter formatter = new DataFormatter();
-		
-		
-		while(rowIterator.hasNext())
-		{
+
+		while (rowIterator.hasNext()) {
 			Row row = rowIterator.next();
-				report.setZone(row.getCell(0).getStringCellValue());
-				report.setRegion(row.getCell(1).getStringCellValue());
-				report.setDepot(row.getCell(2).getStringCellValue());
-				report.setRole(row.getCell(3).getStringCellValue());
-				report.setSapcode(row.getCell(4).getStringCellValue());
-				report.setMobileNo("number");
-				report.setCompanyName(row.getCell(6).getStringCellValue());
-				report.setFirstName(row.getCell(7).getStringCellValue());
-				report.setLastName(row.getCell(8).getStringCellValue());
-				report.setFirstTimeLoginDate(String.valueOf(row.getCell(9).getDateCellValue()));
-				report.setLastLoginDate(String.valueOf(row.getCell(10).getDateCellValue()));
-			
+			report.setZone(row.getCell(0).getStringCellValue());
+			report.setRegion(row.getCell(1).getStringCellValue());
+			report.setDepot(row.getCell(2).getStringCellValue());
+			report.setRole(row.getCell(3).getStringCellValue());
+			report.setSapcode(row.getCell(4).getStringCellValue());
+			report.setMobileNo("number");
+			report.setCompanyName(row.getCell(6).getStringCellValue());
+			report.setFirstName(row.getCell(7).getStringCellValue());
+			report.setLastName(row.getCell(8).getStringCellValue());
+			report.setFirstTimeLoginDate(String.valueOf(row.getCell(9).getDateCellValue()));
+			report.setLastLoginDate(String.valueOf(row.getCell(10).getDateCellValue()));
+
 		}
-		
+
 		return report;
 	}
+
+	public byte[] setExcelRows(List<ReportExcel> reportData) throws IOException {
+	    int record = 1; int sheetNum = 0;
+	    HSSFWorkbook wb = new HSSFWorkbook();
+	    ByteArrayOutputStream out = new ByteArrayOutputStream();
+	    HSSFSheet sheet = wb.createSheet("Employee List "+sheetNum);
+	    setExcelHeader(sheet);
+	    for (ReportExcel reportObject : reportData) {
+	         if (record == 26){
+	             sheetNum++;
+	             sheet= wb.createSheet("Employee List "+ sheetNum);
+	             setExcelHeader(sheet);
+	             record = 1;
+	         }        
+	         HSSFRow row = sheet.createRow(record++);
+	        row.createCell(0).setCellValue(reportObject.getZone());
+			row.createCell(1).setCellValue(reportObject.getRegion());
+			row.createCell(2).setCellValue(reportObject.getDepot());
+			row.createCell(3).setCellValue(reportObject.getRole());
+			row.createCell(4).setCellValue(reportObject.getSapcode());
+			row.createCell(5).setCellValue(reportObject.getMobileNo());
+			row.createCell(6).setCellValue(reportObject.getCompanyName());
+			row.createCell(7).setCellValue(reportObject.getFirstName());
+			row.createCell(8).setCellValue(reportObject.getLastName());
+			row.createCell(9).setCellValue(reportObject.getLastLoginDate());
+			row.createCell(10).setCellValue(reportObject.getFirstTimeLoginDate());
+	 }
+	wb.write(out);
+	return out.toByteArray();
+}
+
+	private void setExcelHeader(HSSFSheet excelSheet) {
+		// TODO Auto-generated method stub
+		HSSFRow excelHeader = excelSheet.createRow(0);
+	    excelHeader.createCell(0).setCellValue("ZONE");
+	    excelHeader.createCell(1).setCellValue("REGION");
+	    excelHeader.createCell(2).setCellValue("DEPOT");
+	    excelHeader.createCell(3).setCellValue("ROLE");
+	    excelHeader.createCell(4).setCellValue("SAP_CODE");
+	    excelHeader.createCell(5).setCellValue("MOBILE_NUMBER");
+	    excelHeader.createCell(6).setCellValue("COMPANY_NAME");
+	    excelHeader.createCell(7).setCellValue("FIRST_NAME");
+	    excelHeader.createCell(8).setCellValue("LAST_NAME");
+	    excelHeader.createCell(9).setCellValue("LAST_LOGIN_DATE");
+	    excelHeader.createCell(10).setCellValue("FIRST_TIME_LOGIN_DATE");
+		
+	}
 	
-	private List<SXSSFWorkbook> splitWorkbook(XSSFWorkbook workbook) {
+	public byte[] buildExcel(List<ReportExcel> reportData) throws IOException {
 
-        List<SXSSFWorkbook> workbooks = new ArrayList<SXSSFWorkbook>();
-
-        SXSSFWorkbook wb = new SXSSFWorkbook();
-        SXSSFSheet sh = (SXSSFSheet) wb.createSheet();
-
-        Row newRow;
-        SXSSFCell newCell;
-
-        int rowCount = 0;
-        int colCount = 0;
-
-        XSSFSheet sheet = workbook.getSheetAt(0);
-
-        for (Row row : sheet) {
-            newRow = sh.createRow(rowCount++);
-
-            /* Time to create a new workbook? */
-            if (rowCount == 1000) {
-                workbooks.add(wb);
-                wb = new SXSSFWorkbook();
-                sh = (SXSSFSheet) wb.createSheet();
-                rowCount = 0;
-            }
-
-            for (Cell cell : row) {
-                newCell = (SXSSFCell) newRow.createCell(colCount++);
-                newCell = setValue(newCell, cell);
-
-                CellStyle newStyle = wb.createCellStyle();
-                newStyle.cloneStyleFrom(cell.getCellStyle());
-                newCell.setCellStyle(newStyle);
-            }
-            colCount = 0;
-        }
-
-        /* Only add the last workbook if it has content */
-        if (wb.getSheetAt(0).getPhysicalNumberOfRows() > 0) {
-            workbooks.add(wb);
-        }
-        return workbooks;
-    }
-
-	
-	
-	
+		int rnum = 1;
+		HSSFWorkbook workbook = new HSSFWorkbook();
+	    HSSFSheet excelSheet = workbook.createSheet("Employee List"+rnum);
+	    setExcelHeader(excelSheet);
+	    byte[] excel = setExcelRows(reportData);
+	    return excel;
+	}
 }
