@@ -1,0 +1,73 @@
+private static int setVendorPolicyName(XSSFWorkbook workbook, Row row, NewPolicyDetailsVO newPolicyDetailsVO,
+			int flagRightData) {
+		if (null == row.getCell(1)) {
+			flagRightData = 1;
+			XSSFCellStyle cellStyle2 = workbook.createCellStyle();
+			cellStyle2.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+			cellStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			row.createCell(1).setCellStyle(cellStyle2);
+			// row.getCell(1).setCellValue("Enter Vendor Name");
+			// row.getCell(1).getStringCellValue().setCellStyle(cellStyle2);
+
+		} else if (Cell.CELL_TYPE_STRING == row.getCell(1).getCellType()) {
+			newPolicyDetailsVO.setVendorPolicyName(row.getCell(1).getStringCellValue());
+		} else {
+			flagRightData = 1;
+			CellStyle cellStyle2 = workbook.createCellStyle();
+			Font font = workbook.createFont();
+			font.setColor(IndexedColors.RED.getIndex());
+			cellStyle2.setFont(font);
+			row.getCell(1).setCellStyle(cellStyle2);
+		}
+		return flagRightData;
+	}
+
+	private static int setPolicyType(XSSFWorkbook workbook, Row row, NewPolicyDetailsVO newPolicyDetailsVO,
+			int flagRightData) {
+		if (null == row.getCell(2)) {
+			flagRightData = 1;
+			XSSFCellStyle cellStyle2 = workbook.createCellStyle();
+			cellStyle2.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+			cellStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			row.createCell(2).setCellStyle(cellStyle2);
+			// row.getCell(1).setCellValue("Enter Vendor Name");
+			// row.getCell(1).getStringCellValue().setCellStyle(cellStyle2);
+
+		} else if (Cell.CELL_TYPE_STRING == row.getCell(2).getCellType()) {
+			newPolicyDetailsVO.setPolicyType(row.getCell(2).getStringCellValue());
+		} else {
+			flagRightData = 1;
+			CellStyle cellStyle2 = workbook.createCellStyle();
+			Font font = workbook.createFont();
+			font.setColor(IndexedColors.RED.getIndex());
+			cellStyle2.setFont(font);
+			row.getCell(2).setCellStyle(cellStyle2);
+		}
+		return flagRightData;
+	}
+
+	private static int setVendorPolicyNumber(XSSFWorkbook workbook, Row row, NewPolicyDetailsVO newPolicyDetailsVO,
+			int flagRightData) {
+		if (null == row.getCell(3)) {
+			flagRightData = 1;
+			XSSFCellStyle cellStyle2 = workbook.createCellStyle();
+			cellStyle2.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+			cellStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			row.createCell(3).setCellStyle(cellStyle2);
+			// row.getCell(1).setCellValue("Enter Vendor Name");
+			// row.getCell(1).getStringCellValue().setCellStyle(cellStyle2);
+
+		} else if (Cell.CELL_TYPE_STRING == row.getCell(3).getCellType()) {
+			newPolicyDetailsVO.setVendorPolicyNumber(String.valueOf(row.getCell(3).getStringCellValue()));
+		} else if (Cell.CELL_TYPE_NUMERIC == row.getCell(3).getCellType()) {
+			newPolicyDetailsVO.setVendorPolicyNumber(String.valueOf((int) row.getCell(3).getNumericCellValue()));
+		} else {
+			flagRightData = 1;
+			CellStyle cellStyle2 = workbook.createCellStyle();
+			Font font = workbook.createFont();
+			font.setColor(IndexedColors.RED.getIndex());
+			cellStyle2.setFont(font);
+			row.getCell(3).setCellStyle(cellStyle2);
+		}
+		return flagRightData;
+	}
